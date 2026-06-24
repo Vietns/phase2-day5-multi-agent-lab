@@ -19,9 +19,14 @@ class Settings(BaseSettings):
 
     openai_api_key: str | None = Field(default=None, validation_alias="OPENAI_API_KEY")
     openai_model: str = Field(default="gpt-4o-mini", validation_alias="OPENAI_MODEL")
+    groq_api_key: str | None = Field(default=None, validation_alias="GROQ_API_KEY")
+    groq_model: str = Field(default="llama-3.3-70b-versatile", validation_alias="GROQ_MODEL")
+    llm_provider: str = Field(default="auto", validation_alias="LLM_PROVIDER")
 
     langsmith_api_key: str | None = Field(default=None, validation_alias="LANGSMITH_API_KEY")
-    langsmith_project: str = Field(default="multi-agent-research-lab", validation_alias="LANGSMITH_PROJECT")
+    langsmith_project: str = Field(
+        default="multi-agent-research-lab", validation_alias="LANGSMITH_PROJECT"
+    )
 
     tavily_api_key: str | None = Field(default=None, validation_alias="TAVILY_API_KEY")
 

@@ -22,7 +22,7 @@ File gợi ý:
 - `src/multi_agent_research_lab/cli.py`
 - `src/multi_agent_research_lab/services/llm_client.py`
 
-TODO(student): thay baseline placeholder bằng một call LLM thật.
+Đã triển khai: baseline dùng OpenAI khi có key và deterministic mock khi chạy offline.
 
 ## Milestone 2: Supervisor
 
@@ -31,7 +31,7 @@ File gợi ý:
 - `src/multi_agent_research_lab/agents/supervisor.py`
 - `src/multi_agent_research_lab/graph/workflow.py`
 
-TODO(student): implement routing policy.
+Đã triển khai: routing theo stage còn thiếu, có max iterations và fallback.
 
 Gợi ý câu hỏi thiết kế:
 
@@ -49,7 +49,7 @@ File gợi ý:
 - `agents/analyst.py`
 - `agents/writer.py`
 
-TODO(student): implement từng worker.
+Đã triển khai: Researcher, Analyst và Writer có validation, trace và usage metadata.
 
 ## Milestone 4: Trace và benchmark
 
