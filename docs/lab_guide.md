@@ -59,6 +59,9 @@ File gợi ý:
 - `evaluation/benchmark.py`
 - `evaluation/report.py`
 
+Đã triển khai: trace được gửi lên LangSmith khi có `LANGSMITH_API_KEY`; JSON local là
+fallback. CLI hiển thị link LangSmith và ghi trace artifacts vào `reports/`.
+
 Benchmark tối thiểu:
 
 | Metric | Cách đo gợi ý |

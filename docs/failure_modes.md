@@ -27,4 +27,5 @@ coverage để phát hiện vấn đề.
 - `agents/researcher.py`: validation nguồn và research notes.
 - `agents/writer.py`: validation final answer và tạo danh sách nguồn.
 - `evaluation/benchmark.py`: failure rate và citation coverage.
+- `observability/tracing.py`: LangSmith provider và JSON fallback.
 - `reports/benchmark_traces.json`: route, duration và lỗi của từng bước chạy.

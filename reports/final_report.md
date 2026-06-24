@@ -62,7 +62,7 @@ Hệ thống triển khai các guardrail sau:
 - Worker retry hai lần tại workflow boundary.
 - Validation output sau Researcher, Analyst và Writer.
 - Partial fallback answer khi một stage tiếp tục thất bại.
-- JSON trace ghi route, duration và error để phục vụ audit.
+- LangSmith trace ghi remote spans và URL; JSON fallback giữ route, duration và error.
 
 Các guardrail này không đảm bảo provider luôn thành công, nhưng bảo đảm lỗi được nhìn
 thấy, workflow dừng hữu hạn và người dùng nhận được partial result thay vì state rỗng.
@@ -139,7 +139,7 @@ có thể lớn hơn lợi ích của việc phân vai.
 - Bổ sung peer-review score hoặc LLM judge cho semantic quality.
 - Đo claim-level citation correctness thay vì chỉ URL coverage.
 - Bổ sung estimated cost theo usage API hoặc pricing snapshot có ngày hiệu lực.
-- Xuất trace sang LangSmith, Langfuse hoặc OpenTelemetry khi cần dashboard.
+- Bổ sung dashboard/alert trên LangSmith và retention policy cho trace production.
 
 ## 11. Kết luận
 
@@ -153,6 +153,6 @@ mặc định cho rằng nhiều agent luôn tốt hơn.
 
 - Source code và tests trong GitHub repo cá nhân.
 - `reports/benchmark_report.md`: benchmark single-agent và multi-agent.
-- `reports/benchmark_traces.json`: trace dùng để chụp screenshot.
+- LangSmith URL hoặc `reports/benchmark_traces.json`: bằng chứng trace.
 - `docs/failure_modes.md`: failure mode và cách khắc phục.
 - `docs/design_template.md`: thiết kế roles, shared state, routing và benchmark plan.

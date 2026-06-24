@@ -15,6 +15,7 @@ from multi_agent_research_lab.agents.base import BaseAgent
 from multi_agent_research_lab.core.config import get_settings
 from multi_agent_research_lab.core.errors import AgentExecutionError
 from multi_agent_research_lab.core.state import ResearchState
+from multi_agent_research_lab.observability.tracing import trace_span
 
 
 class WorkflowContext(TypedDict):
@@ -85,14 +86,28 @@ class MultiAgentWorkflow:
     def run(self, state: ResearchState) -> ResearchState:
         """Execute the graph and validate its final state."""
 
-        self._deadline = perf_counter() + self.timeout_seconds
-        result = self.build().invoke({"state": state})  # type: ignore[attr-defined]
-        final_state = cast(ResearchState, result["state"])
-        if not final_state.final_answer:
-            final_state.final_answer = self._fallback_answer(final_state)
-        if self.enable_critic:
-            self.critic.run(final_state)
-        return final_state
+        span: dict[str, Any] | None = None
+        try:
+            with trace_span(
+                "multi_agent_workflow",
+                {"query": state.request.query, "max_iterations": self.supervisor.max_iterations},
+            ) as span:
+                self._deadline = perf_counter() + self.timeout_seconds
+                result = self.build().invoke({"state": state})  # type: ignore[attr-defined]
+                final_state = cast(ResearchState, result["state"])
+                if not final_state.final_answer:
+                    final_state.final_answer = self._fallback_answer(final_state)
+                if self.enable_critic:
+                    self.critic.run(final_state)
+                span["outputs"] = {
+                    "routes": final_state.route_history,
+                    "error_count": len(final_state.errors),
+                    "has_final_answer": bool(final_state.final_answer),
+                }
+                return final_state
+        finally:
+            if span is not None:
+                state.trace.append(span)
 
     def _supervisor_node(self, context: WorkflowContext) -> WorkflowContext:
         self._supervise(context["state"])

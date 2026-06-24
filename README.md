@@ -74,6 +74,17 @@ LANGSMITH_API_KEY=...
 TAVILY_API_KEY=...
 ```
 
+Để bật trace thật trên LangSmith, tạo API key trong LangSmith và cấu hình:
+
+```env
+LANGSMITH_API_KEY=lsv2_...
+LANGSMITH_PROJECT=multi-agent-research-lab
+```
+
+Khi key tồn tại, baseline và multi-agent spans được gửi lên LangSmith; CLI in URL của
+trace để mở hoặc nộp link. Nếu chưa có key, hệ thống tự động giữ JSON trace trong
+`reports/` và không làm workflow thất bại.
+
 Để dùng Groq, cấu hình `.env` như sau (không commit API key):
 
 ```env
@@ -153,7 +164,7 @@ Các thành phần chính:
 2. Tavily search client với curated local fallback.
 3. Supervisor và worker agents dùng shared state.
 4. LangGraph workflow khi cài optional extra, local graph fallback khi chưa cài.
-5. Portable JSON tracing và benchmark report.
+5. LangSmith tracing với portable JSON fallback và benchmark report.
 
 ## Deliverables
 

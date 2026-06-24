@@ -16,6 +16,7 @@ from multi_agent_research_lab.evaluation.report import render_markdown_report
 from multi_agent_research_lab.graph.baseline import SingleAgentBaseline
 from multi_agent_research_lab.graph.workflow import MultiAgentWorkflow
 from multi_agent_research_lab.observability.logging import configure_logging
+from multi_agent_research_lab.observability.tracing import flush_traces
 from multi_agent_research_lab.services.storage import LocalArtifactStore
 
 app = typer.Typer(help="Multi-Agent Research Lab CLI")
@@ -33,6 +34,10 @@ def _write_trace(name: str, state: ResearchState) -> str:
     return str(path)
 
 
+def _langsmith_links(state: ResearchState) -> list[str]:
+    return [str(item["url"]) for item in state.trace if item.get("url")]
+
+
 @app.command()
 def baseline(
     query: Annotated[str, typer.Option("--query", "-q", help="Research query")],
@@ -41,9 +46,12 @@ def baseline(
 
     _init()
     state = SingleAgentBaseline().run(query)
+    flush_traces()
     trace_path = _write_trace("baseline_trace.json", state)
     console.print(Panel(Markdown(state.final_answer or ""), title="Single-Agent Baseline"))
     console.print(f"Trace: {trace_path}")
+    if links := _langsmith_links(state):
+        console.print(f"LangSmith: {links[-1]}")
 
 
 @app.command("multi-agent")
@@ -55,10 +63,13 @@ def multi_agent(
     _init()
     state = ResearchState(request=ResearchQuery(query=query))
     result = MultiAgentWorkflow().run(state)
+    flush_traces()
     trace_path = _write_trace("multi_agent_trace.json", result)
     console.print(Panel(Markdown(result.final_answer or ""), title="Multi-Agent Result"))
     console.print(f"Routes: {' -> '.join(result.route_history)}")
     console.print(f"Trace: {trace_path}")
+    if links := _langsmith_links(result):
+        console.print(f"LangSmith: {links[-1]}")
     if result.errors:
         console.print(f"Errors: {'; '.join(result.errors)}", style="yellow")
 
@@ -79,6 +90,7 @@ def benchmark(
         return MultiAgentWorkflow().run(ResearchState(request=ResearchQuery(query=item)))
 
     multi_state, multi_metrics = run_benchmark("multi-agent", query, run_multi)
+    flush_traces()
     report = render_markdown_report([baseline_metrics, multi_metrics])
     store = LocalArtifactStore()
     report_path = store.write_text("benchmark_report.md", report)
@@ -92,6 +104,9 @@ def benchmark(
     )
     console.print(Markdown(report))
     console.print(f"Report: {report_path}")
+    links = _langsmith_links(baseline_state) + _langsmith_links(multi_state)
+    if links:
+        console.print(f"LangSmith traces: {len(links)} (latest: {links[-1]})")
 
 
 if __name__ == "__main__":

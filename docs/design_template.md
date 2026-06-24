@@ -29,7 +29,7 @@ baseline is expected to be preferable.
 - `iteration` and `route_history`: loop guard and routing audit.
 - `sources`, `research_notes`, `analysis_notes`, `final_answer`: explicit handoffs.
 - `agent_results`: content plus token/cost metadata per agent.
-- `trace`: local JSON spans and routing/error events.
+- `trace`: LangSmith spans khi có API key, đồng thời giữ local JSON routing/error events.
 - `errors`: provider and validation failures retained for fallback and evaluation.
 
 ## Routing policy
